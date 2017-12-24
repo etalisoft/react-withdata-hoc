@@ -42,8 +42,9 @@ export default (options = {}) => BaseComponent => {
       // Filter Data
       const { filter } = this.state;
       if (filter) {
-        const filters = parseFilter(filter);
-        if (filters) {
+        const parsed = parseFilter(filter);
+        if (parsed) {
+          const filters = parsed instanceof Array ? parsed : [parsed];
           const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
           data = data.filter(fn);
         }

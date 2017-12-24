@@ -82,5 +82,21 @@ describe('withData', () => {
       const expected = [options.initial.data[0], options.initial.data[2]];
       expect(JSON.stringify(props.data)).toEqual(JSON.stringify(expected));
     });
+
+    it('should support custom filter parsers', () => {
+      const options = {
+        initial: {
+          columns: [{ id: 'id' }, { id: 'name', filter: f => o => o.name.includes(f.upper) }],
+          data: [{ id: 123, name: 'BOB' }, { id: 456, name: 'JOE' }, { id: 102, name: 'FRED' }],
+          filter: 'o',
+        },
+        parseFilter: f => ({ upper: f.toUpperCase() }),
+      };
+      const { dom } = render({ component: Div, options });
+      const { props } = TestUtils.findRenderedComponentWithType(dom, Div);
+      expect(props.data).toBeA('array');
+      const expected = [options.initial.data[0], options.initial.data[1]];
+      expect(JSON.stringify(props.data)).toEqual(JSON.stringify(expected));
+    });
   });
 });
