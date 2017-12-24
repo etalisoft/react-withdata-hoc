@@ -39,6 +39,12 @@ export default (options = {}) => BaseComponent => {
       // TODO: sort columns
 
       // TODO: filter data
+      const { filter } = this.state;
+      if (filter) {
+        // TODO: parse filters (Ex1 "Ex2 Ex3" Ex4)
+        // TODO: Support custom filter parser
+        data = data.filter(d => columns.some(c => c.filter(filter)(d)));
+      }
       // TODO: sort data
       // TODO: paginate data
 
@@ -51,8 +57,6 @@ export default (options = {}) => BaseComponent => {
     }
 
     setFilter = filter => {
-      // TODO: parse filters (Ex1 "Ex2 Ex3" Ex4)
-      // TODO: Support custom filter parser
       this.setState({ filter });
     };
 

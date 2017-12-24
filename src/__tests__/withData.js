@@ -5,8 +5,8 @@ import TestUtils from 'react-dom/test-utils';
 
 import withData from '../withData';
 
-const render = ({ component, config, attributes }) => {
-  const WithData = withData(config)(component);
+const render = ({ component, options, attributes }) => {
+  const WithData = withData(options)(component);
   const dom = TestUtils.renderIntoDocument(<WithData {...attributes} />);
   return { dom };
 };
@@ -45,5 +45,27 @@ describe('withData', () => {
       'setSort',
       'sort',
     ]);
+  });
+
+  describe('filtering', () => {
+    it.only('should filter the data', () => {
+      class Div extends Component {
+        render() {
+          return <div />;
+        }
+      }
+      const options = {
+        initial: {
+          data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          columns: [{ id: 'num', filter: f => v => v % f === 0 }],
+          filter: '2',
+        },
+      };
+      const { dom } = render({ component: Div, options });
+      const { props } = TestUtils.findRenderedComponentWithType(dom, Div);
+      console.log(props);
+      expect(props.data).toBeA('array');
+      expect(props.data).toEqual([0, 2, 4, 6, 8]);
+    });
   });
 });
