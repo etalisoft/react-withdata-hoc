@@ -1,3 +1,5 @@
+import parseFilter from './parseFilter';
+
 export default {
   initial: {
     data: undefined,
@@ -7,4 +9,5 @@ export default {
     page: 0,
     pageSize: 10,
   },
+  parseFilter,
 };

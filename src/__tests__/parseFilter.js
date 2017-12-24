@@ -2,7 +2,7 @@ import expect from 'expect';
 
 import parseFilter from '../parseFilter';
 
-describe.only('parseFilter', () => {
+describe('parseFilter', () => {
   it('should parse correctly', () => {
     expect(parseFilter()).toEqual(undefined);
     expect(parseFilter('')).toEqual(undefined);

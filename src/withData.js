@@ -8,6 +8,7 @@ export default (options = {}) => BaseComponent => {
     ...defaults.initial,
     ...options.initial,
   };
+  const parseFilter = options.parseFilter || defaults.parseFilter;
 
   class WithData extends Component {
     state = {
@@ -38,13 +39,16 @@ export default (options = {}) => BaseComponent => {
       // TODO: filter columns
       // TODO: sort columns
 
-      // TODO: filter data
+      // Filter Data
       const { filter } = this.state;
       if (filter) {
-        // TODO: parse filters (Ex1 "Ex2 Ex3" Ex4)
-        // TODO: Support custom filter parser
-        data = data.filter(d => columns.some(c => c.filter(filter)(d)));
+        const filters = parseFilter(filter);
+        if (filters) {
+          const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
+          data = data.filter(fn);
+        }
       }
+
       // TODO: sort data
       // TODO: paginate data
 
