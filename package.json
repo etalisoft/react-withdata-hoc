@@ -17,7 +17,7 @@
     "lint": "eslint src",
     "format": "prettier-eslint \"+(src|examples)/**/*.js\" --ignore \"**/bundle.js\" --write --no-semi --single-quote --trailingComma=none",
     "prepublish": "npm run test && npm run clean && npm run build",
-    "test": "mocha --color --compilers js:babel-register --recursive --recursive \"src/**/__tests__/*\" --require src/__tests__/global.js",
+    "test": "mocha --color --compilers js:babel-register --recursive \"src/**/__tests__/*\" --require src/__tests__/global.js",
     "test:watch": "npm test -- --watch",
     "test:cov": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text npm test"
   },
