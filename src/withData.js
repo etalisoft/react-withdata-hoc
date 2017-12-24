@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import defaults from './withData.defaults';
 
+const bool = v => typeof v === 'boolean';
+
 export default (options = {}) => BaseComponent => {
   const initial = {
     ...defaults.initial,
@@ -33,7 +35,6 @@ export default (options = {}) => BaseComponent => {
       const { data: rawData, columns: rawColumns } = this.props;
       let columns = rawColumns;
       let data = rawData;
-      let pages = [rawData];
       let other = {};
 
       // TODO: filter columns
@@ -51,7 +52,24 @@ export default (options = {}) => BaseComponent => {
       }
 
       // TODO: sort data
+      const { sort } = this.state;
+      if (sort) {
+        const sorts = sort.reduce((arr, { column: id, ascending: asc }) => {
+          const column = rawColumns.find(c => c.id === id);
+          if (column && column.sort) {
+            const ascending = bool(asc) ? asc : bool(column.ascending) ? column.ascending : true;
+            arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
+          }
+          return arr;
+        }, []);
+        if (sorts.length) {
+          const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
+          data = [...data].sort(fn);
+        }
+      }
+
       // TODO: paginate data
+      const pages = [rawData];
 
       this.setState({
         columns,

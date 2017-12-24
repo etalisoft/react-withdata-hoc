@@ -99,4 +99,37 @@ describe('withData', () => {
       expect(JSON.stringify(props.data)).toEqual(JSON.stringify(expected));
     });
   });
+
+  describe('sorting', () => {
+    it('should sort the data', () => {
+      const options = {
+        initial: {
+          columns: [
+            { id: 'age', sort: (a, b) => a.age - b.age },
+            { id: 'first', sort: (a, b) => a.first.localeCompare(b.first) },
+            { id: 'last', sort: (a, b) => a.first.localeCompare(b.first) },
+          ],
+          data: [
+            { age: 12, first: 'Aaron', last: 'Adams' },
+            { age: 11, first: 'Bill', last: 'White' },
+            { age: 11, first: 'Bill', last: 'Jones' },
+            { age: 11, first: 'Andy', last: 'Yates' },
+            { age: 10, first: 'Xavier', last: 'Zane' },
+          ],
+          sort: [{ column: 'age' }, { column: 'first', ascending: false }, { column: 'last' }],
+        },
+      };
+      const { dom } = render({ component: Div, options });
+      const { props } = TestUtils.findRenderedComponentWithType(dom, Div);
+      expect(props.data).toBeA('array');
+      const expected = [
+        { age: 10, first: 'Xavier', last: 'Zane' },
+        { age: 11, first: 'Bill', last: 'White' },
+        { age: 11, first: 'Bill', last: 'Jones' },
+        { age: 11, first: 'Andy', last: 'Yates' },
+        { age: 12, first: 'Aaron', last: 'Adams' },
+      ];
+      expect(JSON.stringify(props.data)).toBe(JSON.stringify(expected));
+    });
+  });
 });
