@@ -48,7 +48,7 @@ describe('withData', () => {
   });
 
   describe('filtering', () => {
-    it.only('should filter the data', () => {
+    it('should filter the data', () => {
       class Div extends Component {
         render() {
           return <div />;
@@ -63,7 +63,6 @@ describe('withData', () => {
       };
       const { dom } = render({ component: Div, options });
       const { props } = TestUtils.findRenderedComponentWithType(dom, Div);
-      console.log(props);
       expect(props.data).toBeA('array');
       expect(props.data).toEqual([0, 2, 4, 6, 8]);
     });
