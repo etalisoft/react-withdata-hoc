@@ -30,8 +30,9 @@ export default (options = {}) => BaseComponent => {
 
     updateData() {
       const { data: rawData, columns: rawColumns } = this.props;
-      let data = rawData;
       let columns = rawColumns;
+      let data = rawData;
+      let pages = [rawData];
       let other = {};
 
       // TODO: filter columns
@@ -42,8 +43,9 @@ export default (options = {}) => BaseComponent => {
       // TODO: paginate data
 
       this.setState({
-        data,
         columns,
+        data,
+        pages,
         ...other,
       });
     }
