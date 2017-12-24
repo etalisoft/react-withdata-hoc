@@ -1,0 +1,97 @@
+{
+  "name": "react-withdata",
+  "version": "0.0.0",
+  "description": "Higher-Order Component (HOC) for binding react to tabular data.",
+  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etalisoft/react-withdata"
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build:lib": "babel src --out-dir lib --ignore __tests__",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es --ignore __tests__",
+    "build:umd": "cross-env NODE_ENV=development webpack src/index.js dist/react-withdata.js",
+    "build:umd:min": "cross-env NODE_ENV=production webpack src/index.js dist/react-withdata.min.js",
+    "clean": "rimraf dist lib es",
+    "lint": "eslint src",
+    "format": "prettier-eslint \"+(src|examples)/**/*.js\" --ignore \"**/bundle.js\" --write --no-semi --single-quote --trailingComma=none",
+    "prepublish": "npm run test && npm run clean && npm run build",
+    "test": "mocha --color --compilers js:babel-register --recursive --recursive \"src/**/__tests__/*\" --require src/__tests__/global.js",
+    "test:watch": "npm test -- --watch",
+    "test:cov": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text npm test"
+  },
+  "keywords": [
+    "react",
+    "withdata",
+    "filter",
+    "sort",
+    "paginate"
+  ],
+  "author": "Jason Whitted <etalisoft@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/etalisoft/react-withdata/issues"
+  },
+  "homepage": "https://github.com/etalisoft/react-withdata#readme",
+  "dependencies": {
+    "prop-types": "^15.5.9"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.2",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-istanbul": "^4.1.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-preset-es2015-no-commonjs": "^0.0.2",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "codecov.io": "^0.1.6",
+    "cross-env": "^5.0.1",
+    "eslint": "^3.17.1",
+    "eslint-config-react-app": "^1.0.4",
+    "eslint-plugin-flowtype": "^2.30.4",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.0",
+    "expect": "^1.20.2",
+    "jsdom": "^11.0.0",
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.2",
+    "prettier": "^1.4.4",
+    "prettier-eslint-cli": "^4.1.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "rifraf": "^2.0.3",
+    "rimraf": "^2.6.1",
+    "webpack": "^2.5.1",
+    "webpack-bundle-analyzer": "^2.7.0"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0"
+  },
+  "files": [
+    "README.md",
+    "es",
+    "lib",
+    "dist"
+  ],
+  "nyc": {
+    "include": [
+      "src/**/*.js"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "npmName": "react-withdata",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ]
+}
