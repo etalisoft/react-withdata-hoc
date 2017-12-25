@@ -17,7 +17,7 @@ export default (options = {}) => BaseComponent => {
     state = {
       columns: initial.columns,
       data: initial.data,
-      filter: initial.filter,
+      filter: parseFilter(initial.filter),
       sort: parseSort(initial.sort, undefined, initial.columns),
       page: initial.page,
       pageSize: initial.pageSize,
@@ -46,18 +46,14 @@ export default (options = {}) => BaseComponent => {
         // Filter data
         const { filter } = this.state;
         if (filter) {
-          const parsed = parseFilter(filter);
-          if (parsed) {
-            const filters = toArray(parsed);
-            const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
-            data = data.filter(fn);
-          }
+          const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
+          data = data.filter(fn);
         }
 
         // Sort data
         const { sort } = this.state;
         if (sort) {
-          const sorts = sort.reduce((arr, { column: id, ascending }) => {
+          const sorts = toArray(sort).reduce((arr, { column: id, ascending }) => {
             const column = rawColumns.find(c => c.id === id);
             if (column && column.sort) {
               arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
@@ -94,7 +90,9 @@ export default (options = {}) => BaseComponent => {
     }
 
     setFilter = filter => {
-      this.setState({ filter });
+      this.setState({
+        filter: parseFilter(filter),
+      });
     };
 
     setSort = sort => {
