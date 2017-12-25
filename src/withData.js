@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import defaults from './withData.defaults';
 
-const bool = v => typeof v === 'boolean';
+import { toArray } from './helpers';
 
 export default (options = {}) => BaseComponent => {
   const initial = {
@@ -11,13 +11,14 @@ export default (options = {}) => BaseComponent => {
     ...options.initial,
   };
   const parseFilter = options.parseFilter || defaults.parseFilter;
+  const parseSort = options.parseSort || defaults.parseSort;
 
   class WithData extends Component {
     state = {
       columns: initial.columns,
       data: initial.data,
       filter: initial.filter,
-      sort: initial.sort,
+      sort: parseSort(initial.sort, undefined, initial.columns),
       page: initial.page,
       pageSize: initial.pageSize,
     };
@@ -47,7 +48,7 @@ export default (options = {}) => BaseComponent => {
         if (filter) {
           const parsed = parseFilter(filter);
           if (parsed) {
-            const filters = parsed instanceof Array ? parsed : [parsed];
+            const filters = toArray(parsed);
             const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
             data = data.filter(fn);
           }
@@ -56,10 +57,9 @@ export default (options = {}) => BaseComponent => {
         // Sort data
         const { sort } = this.state;
         if (sort) {
-          const sorts = sort.reduce((arr, { column: id, ascending: asc }) => {
+          const sorts = sort.reduce((arr, { column: id, ascending }) => {
             const column = rawColumns.find(c => c.id === id);
             if (column && column.sort) {
-              const ascending = bool(asc) ? asc : bool(column.ascending) ? column.ascending : true;
               arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
             }
             return arr;
@@ -98,9 +98,9 @@ export default (options = {}) => BaseComponent => {
     };
 
     setSort = sort => {
-      // TODO: parse sorts (string / {column:string,ascending:bool})
-      // TODO: Support custom sort parser
-      this.setState({ sort });
+      this.setState({
+        sort: parseSort(sort, this.state.sort, this.props.columns),
+      });
     };
 
     setPage = page => {

@@ -116,7 +116,7 @@ describe('withData', () => {
             { age: 11, first: 'Andy', last: 'Yates' },
             { age: 10, first: 'Xavier', last: 'Zane' },
           ],
-          sort: [{ column: 'age' }, { column: 'first', ascending: false }, { column: 'last' }],
+          sort: ['age', { column: 'first', ascending: false }, 'last'],
         },
       };
       const { dom } = render({ component: Div, options });

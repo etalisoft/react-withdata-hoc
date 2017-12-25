@@ -1,4 +1,5 @@
 import parseFilter from './parseFilter';
+import parseSort from './parseSort';
 
 export default {
   initial: {
@@ -10,4 +11,5 @@ export default {
     pageSize: 10,
   },
   parseFilter,
+  parseSort,
 };
