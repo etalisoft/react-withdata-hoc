@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import defaults from './withData.defaults';
 
 import { toArray } from './helpers';
+import throttle from './throttle';
 
 export default (options = {}) => BaseComponent => {
   const initial = {
@@ -12,6 +13,7 @@ export default (options = {}) => BaseComponent => {
   };
   const parseFilter = options.parseFilter || defaults.parseFilter;
   const parseSort = options.parseSort || defaults.parseSort;
+  const ms = options.throttle || defaults.throttle;
 
   class WithData extends Component {
     state = {
@@ -25,11 +27,20 @@ export default (options = {}) => BaseComponent => {
 
     componentWillMount() {
       this.updateData();
-      // TODO: create a throttled version of updatedata
+      this.throttledUpdate = throttle({ ms })(this.updateData.bind(this));
     }
 
     componentDidUpdate(prevProps, prevState) {
-      // TODO: Call the throttled version of update data only when needed
+      if (
+        this.props.data !== prevProps.data ||
+        this.props.columns !== prevProps.columns ||
+        this.state.sort != prevState.sort ||
+        this.state.filter != prevState.filter ||
+        this.state.page != prevState.page ||
+        this.state.pageSize != prevState.pageSize
+      ) {
+        this.throttledUpdate();
+      }
     }
 
     updateData() {

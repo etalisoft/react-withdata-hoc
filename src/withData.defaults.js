@@ -12,4 +12,5 @@ export default {
   },
   parseFilter,
   parseSort,
+  throttle: 250,
 };
