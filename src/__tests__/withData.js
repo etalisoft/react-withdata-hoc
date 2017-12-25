@@ -132,4 +132,23 @@ describe('withData', () => {
       expect(JSON.stringify(props.data)).toBe(JSON.stringify(expected));
     });
   });
+
+  describe('paginating', () => {
+    it('should paginate the data', () => {
+      const options = {
+        initial: {
+          data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          page: 1,
+          pageSize: 3,
+        },
+      };
+      const { dom } = render({ component: Div, options });
+      const { props } = TestUtils.findRenderedComponentWithType(dom, Div);
+      expect(props.data).toBeA('array');
+      expect(props.data).toEqual([3, 4, 5]);
+      expect(props.pages).toBeA('array');
+      expect(props.pages.length).toBe(4);
+      expect(props.pages).toEqual([[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]);
+    });
+  });
 });

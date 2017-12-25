@@ -35,41 +35,55 @@ export default (options = {}) => BaseComponent => {
       const { data: rawData, columns: rawColumns } = this.props;
       let columns = rawColumns;
       let data = rawData;
+      let pages = undefined;
       let other = {};
 
       // TODO: filter columns
       // TODO: sort columns
 
-      // Filter Data
-      const { filter } = this.state;
-      if (filter) {
-        const parsed = parseFilter(filter);
-        if (parsed) {
-          const filters = parsed instanceof Array ? parsed : [parsed];
-          const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
-          data = data.filter(fn);
-        }
-      }
-
-      // TODO: sort data
-      const { sort } = this.state;
-      if (sort) {
-        const sorts = sort.reduce((arr, { column: id, ascending: asc }) => {
-          const column = rawColumns.find(c => c.id === id);
-          if (column && column.sort) {
-            const ascending = bool(asc) ? asc : bool(column.ascending) ? column.ascending : true;
-            arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
+      if (data) {
+        // Filter data
+        const { filter } = this.state;
+        if (filter) {
+          const parsed = parseFilter(filter);
+          if (parsed) {
+            const filters = parsed instanceof Array ? parsed : [parsed];
+            const fn = o => filters.every(f => columns.some(c => c.filter && c.filter(f)(o)));
+            data = data.filter(fn);
           }
-          return arr;
-        }, []);
-        if (sorts.length) {
-          const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
-          data = [...data].sort(fn);
+        }
+
+        // Sort data
+        const { sort } = this.state;
+        if (sort) {
+          const sorts = sort.reduce((arr, { column: id, ascending: asc }) => {
+            const column = rawColumns.find(c => c.id === id);
+            if (column && column.sort) {
+              const ascending = bool(asc) ? asc : bool(column.ascending) ? column.ascending : true;
+              arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
+            }
+            return arr;
+          }, []);
+          if (sorts.length) {
+            const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
+            data = [...data].sort(fn);
+          }
+        }
+
+        // Paginate data
+        const { pageSize, page } = this.state;
+        other.maxPage = other.page = 0;
+        pages = [data];
+        if (pageSize >= 0 && data.length > pageSize) {
+          other.maxPage = Math.max(Math.ceil(data.length / pageSize) - 1, 0);
+          other.page = Math.max(Math.min(page, other.maxPage), 0);
+          pages = [];
+          for (var i = 0; i < data.length; i += pageSize) {
+            pages.push(data.slice(i, i + pageSize));
+          }
+          data = pages[other.page];
         }
       }
-
-      // TODO: paginate data
-      const pages = [rawData];
 
       this.setState({
         columns,
