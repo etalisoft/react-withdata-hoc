@@ -48,12 +48,18 @@ export default (options = {}) => BaseComponent => {
     updateData() {
       const { data: rawData } = this.props;
       const { columns: curColumns, filter, sort, pageSize, page: curPage } = this.state;
+      console.groupCollapsed('updateData');
+      console.log({ props: this.props, state: this.state });
+      console.log('curColumns', JSON.stringify(curColumns));
+      console.log('rawColumns', JSON.stringify(this.props.columns));
       const colEnum = new Enumerable(parseColumn(undefined, curColumns, this.props.columns));
       const rawColumns = colEnum.toArray();
-      let columns = colEnum
+      const columns = colEnum
         .where(c => c.visible)
         .orderBy((a, b) => a.priority - b.priority)
         .toArray();
+      console.log({ RAW: rawColumns, COL: columns });
+      console.groupEnd();
       let data = rawData;
       let pages = undefined;
       let other = {};

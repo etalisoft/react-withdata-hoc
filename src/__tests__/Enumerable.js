@@ -1,6 +1,7 @@
 import expect from 'expect';
 
 import Enumerable from '../Enumerable';
+import parseColumn from '../parseColumn';
 
 describe('Enumerable', () => {
   it('should be an Enumerable object', () => {
