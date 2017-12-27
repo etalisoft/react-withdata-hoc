@@ -48,48 +48,39 @@ export default (options = {}) => BaseComponent => {
     updateData() {
       const { data: rawData, columns: rawColumns } = this.props;
       const { columns: curColumns, filter, sort, pageSize, page: curPage } = this.state;
-      let columns = rawColumns;
+      let columns = new Enumerable(parseColumn(undefined, curColumns, rawColumns))
+        .where(c => c.visible)
+        .orderBy((a, b) => a.priority - b.priority)
+        .toArray();
       let data = rawData;
       let pages = undefined;
       let other = {};
 
-      if (rawColumns && rawColumns.length && curColumns && curColumns.length) {
-        const colEnum = new Enumerable(columns);
-
-        // TODO: filter columns
-        colEnum.where(c => c.visible);
-
-        // TODO: sort columns
-        colEnum.orderBy((a, b) => a.priority - b.priority);
-
-        columns = colEnum.toArray();
-      }
-
-      const enumerable = new Enumerable(rawData);
-
-      // Filter data
-      if (rawData && filter) {
-        const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
-        enumerable.where(fn);
-      }
-
-      // Sort data
-      if (rawData && sort) {
-        const sorts = toArray(sort).reduce((arr, { column: id, ascending }) => {
-          const column = rawColumns.find(c => c.id === id);
-          if (column && column.sort) {
-            arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
-          }
-          return arr;
-        }, []);
-        if (sorts.length) {
-          const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
-          enumerable.orderBy(fn);
-        }
-      }
-
-      // Paginate data
       if (rawData) {
+        const enumerable = new Enumerable(rawData);
+
+        // Filter data
+        if (filter) {
+          const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
+          enumerable.where(fn);
+        }
+
+        // Sort data
+        if (sort) {
+          const sorts = toArray(sort).reduce((arr, { column: id, ascending }) => {
+            const column = rawColumns.find(c => c.id === id);
+            if (column && column.sort) {
+              arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
+            }
+            return arr;
+          }, []);
+          if (sorts.length) {
+            const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
+            enumerable.orderBy(fn);
+          }
+        }
+
+        // Paginate data
         data = enumerable.toArray();
         pages = [data];
         if (pageSize >= 0 && data.length > pageSize) {
@@ -132,11 +123,6 @@ export default (options = {}) => BaseComponent => {
     };
 
     setColumn = column => {
-      console.log('parseColumn(');
-      console.log('column', column);
-      console.log('curColumns', this.state.columns);
-      console.log('rawColumns', this.props.columns);
-      console.log(') =', parseColumn(column, this.state.columns, this.props.columns));
       this.setState({
         columns: parseColumn(column, this.state.columns, this.props.columns),
       });
