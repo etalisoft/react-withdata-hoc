@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import defaults from './withData.defaults';
 
+import Enumerable from './Enumerable';
 import { toArray } from './helpers';
 import throttle from './throttle';
 
@@ -45,6 +46,7 @@ export default (options = {}) => BaseComponent => {
 
     updateData() {
       const { data: rawData, columns: rawColumns } = this.props;
+      const { filter, sort, pageSize, page: curPage } = this.state;
       let columns = rawColumns;
       let data = rawData;
       let pages = undefined;
@@ -53,42 +55,41 @@ export default (options = {}) => BaseComponent => {
       // TODO: filter columns
       // TODO: sort columns
 
-      if (data) {
-        // Filter data
-        const { filter } = this.state;
-        if (filter) {
-          const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
-          data = data.filter(fn);
-        }
+      const enumerable = new Enumerable(rawData);
 
-        // Sort data
-        const { sort } = this.state;
-        if (sort) {
-          const sorts = toArray(sort).reduce((arr, { column: id, ascending }) => {
-            const column = rawColumns.find(c => c.id === id);
-            if (column && column.sort) {
-              arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
-            }
-            return arr;
-          }, []);
-          if (sorts.length) {
-            const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
-            data = [...data].sort(fn);
+      // Filter data
+      if (rawData && filter) {
+        const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
+        enumerable.where(fn);
+      }
+
+      // Sort data
+      if (rawData && sort) {
+        const sorts = toArray(sort).reduce((arr, { column: id, ascending }) => {
+          const column = rawColumns.find(c => c.id === id);
+          if (column && column.sort) {
+            arr.push({ srt: column.sort, dir: ascending ? 1 : -1 });
           }
+          return arr;
+        }, []);
+        if (sorts.length) {
+          const fn = (a, b) => sorts.reduce((r, { srt, dir }) => (!r ? srt(a, b) * dir : r), 0);
+          enumerable.orderBy(fn);
         }
+      }
 
-        // Paginate data
-        const { pageSize, page } = this.state;
-        other.maxPage = other.page = 0;
+      // Paginate data
+      if (rawData) {
+        data = enumerable.toArray();
         pages = [data];
         if (pageSize >= 0 && data.length > pageSize) {
           other.maxPage = Math.max(Math.ceil(data.length / pageSize) - 1, 0);
-          other.page = Math.max(Math.min(page, other.maxPage), 0);
-          pages = [];
-          for (var i = 0; i < data.length; i += pageSize) {
-            pages.push(data.slice(i, i + pageSize));
-          }
-          data = pages[other.page];
+          other.page = Math.max(Math.min(curPage, other.maxPage), 0);
+          pages = new Enumerable(data).partition(pageSize).toArray();
+          data = enumerable
+            .skip(other.page * pageSize)
+            .take(pageSize)
+            .toArray();
         }
       }
 
@@ -113,7 +114,6 @@ export default (options = {}) => BaseComponent => {
     };
 
     setPage = page => {
-      // TODO: constrain page to valid values
       this.setState({ page });
     };
 
