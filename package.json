@@ -1,18 +1,18 @@
 {
-  "name": "react-withdata",
+  "name": "react-withdata-hoc",
   "version": "0.0.0",
   "description": "Higher-Order Component (HOC) for binding react to tabular data.",
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/etalisoft/react-withdata"
+    "url": "https://github.com/etalisoft/react-withdata-hoc"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:lib": "babel src --out-dir lib --ignore __tests__",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es --ignore __tests__",
-    "build:umd": "cross-env NODE_ENV=development webpack src/index.js dist/react-withdata.js",
-    "build:umd:min": "cross-env NODE_ENV=production webpack src/index.js dist/react-withdata.min.js",
+    "build:umd": "cross-env NODE_ENV=development webpack src/index.js dist/react-withdata-hoc.js",
+    "build:umd:min": "cross-env NODE_ENV=production webpack src/index.js dist/react-withdata-hoc.min.js",
     "clean": "rimraf dist lib es",
     "lint": "eslint src",
     "format": "prettier-eslint \"+(src|examples)/**/*.js\" --ignore \"**/bundle.js\" --write --no-semi --single-quote --trailingComma=none",
@@ -24,6 +24,7 @@
   "keywords": [
     "react",
     "withdata",
+    "HOC",
     "filter",
     "sort",
     "paginate"
@@ -31,9 +32,9 @@
   "author": "Jason Whitted <etalisoft@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/etalisoft/react-withdata/issues"
+    "url": "https://github.com/etalisoft/react-withdata-hoc/issues"
   },
-  "homepage": "https://github.com/etalisoft/react-withdata#readme",
+  "homepage": "https://github.com/etalisoft/react-withdata-hoc#readme",
   "dependencies": {
     "prop-types": "^15.5.9"
   },
@@ -85,7 +86,7 @@
     "sourceMap": false,
     "instrument": false
   },
-  "npmName": "react-withdata",
+  "npmName": "react-withdata-hoc",
   "npmFileMap": [
     {
       "basePath": "/dist/",

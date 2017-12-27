@@ -1,9 +1,9 @@
-# react-withdata
+# react-withdata-hoc
 ---
-`react-withdata` provides a Higher-Order Component (HOC) to help filter, sort, and paginate tabular data.
+`react-withdata-hoc` provides a Higher-Order Component (HOC) to help filter, sort, and paginate tabular data.
 
 ## Installation
-`npm install --save react-withdata`
+`npm install --save react-withdata-hoc`
 
 ## Documentation
 - Coming soon...

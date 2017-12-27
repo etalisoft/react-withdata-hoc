@@ -18,7 +18,7 @@ var config = {
     loaders: [{ test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }],
   },
   output: {
-    library: 'ReactWithData',
+    library: 'ReactWithDataHoc',
     libraryTarget: 'umd',
   },
   plugins: [
