@@ -86,7 +86,7 @@ export default (options = {}) => BaseComponent => {
         // Paginate data
         data = enumerable.toArray();
         pages = [data];
-        if (pageSize >= 0 && data.length > pageSize) {
+        if (pageSize >= 0) {
           other.maxPage = Math.max(Math.ceil(data.length / pageSize) - 1, 0);
           other.page = Math.max(Math.min(curPage, other.maxPage), 0);
           pages = new Enumerable(data).partition(pageSize).toArray();
