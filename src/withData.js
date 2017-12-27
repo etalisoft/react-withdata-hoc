@@ -21,7 +21,7 @@ export default (options = {}) => BaseComponent => {
     state = {
       columns: parseColumn(undefined, undefined, initial.columns),
       data: initial.data,
-      filter: parseFilter(initial.filter),
+      filter: initial.filter,
       sort: parseSort(initial.sort, undefined, initial.columns),
       page: initial.page,
       pageSize: initial.pageSize,
@@ -61,8 +61,11 @@ export default (options = {}) => BaseComponent => {
 
         // Filter data
         if (filter) {
-          const fn = o => toArray(filter).every(f => columns.some(c => c.filter && c.filter(f)(o)));
-          enumerable.where(fn);
+          const parsed = parseFilter(filter);
+          if (parsed) {
+            const fn = o => toArray(parsed).every(f => columns.some(c => c.filter && c.filter(f)(o)));
+            enumerable.where(fn);
+          }
         }
 
         // Sort data
@@ -103,9 +106,7 @@ export default (options = {}) => BaseComponent => {
     }
 
     setFilter = filter => {
-      this.setState({
-        filter: parseFilter(filter),
-      });
+      this.setState({ filter });
     };
 
     setSort = sort => {
