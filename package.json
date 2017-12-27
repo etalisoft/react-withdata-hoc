@@ -1,6 +1,6 @@
 {
   "name": "react-withdata-hoc",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Higher-Order Component (HOC) for binding react to tabular data.",
   "main": "./lib/index.js",
   "repository": {

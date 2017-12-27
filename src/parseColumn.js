@@ -5,7 +5,7 @@ export default (value, curColumns, rawColumns) => {
     ? undefined
     : rawColumns.map((rawCol, index) => {
         const { id } = rawCol;
-        const newCol = value && value.find(c => c.column === id);
+        const newCol = value && toArray(value).find(c => c.column === id);
         const curCol = curColumns && curColumns.find(c => c.column === id);
         return {
           ...rawCol,
