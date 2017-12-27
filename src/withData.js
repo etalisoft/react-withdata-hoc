@@ -33,15 +33,7 @@ export default (options = {}) => BaseComponent => {
     }
 
     componentDidUpdate(prevProps, prevState) {
-      if (
-        this.props.data !== prevProps.data ||
-        this.props.columns !== prevProps.columns ||
-        this.state.columns !== prevState.columns ||
-        this.state.sort != prevState.sort ||
-        this.state.filter != prevState.filter ||
-        this.state.page != prevState.page ||
-        this.state.pageSize != prevState.pageSize
-      ) {
+      if (prevProps.data !== this.props.data || prevProps.columns !== this.props.columns) {
         this.throttledUpdate();
       }
     }
@@ -49,12 +41,17 @@ export default (options = {}) => BaseComponent => {
     updateData() {
       const { data: rawData } = this.props;
       const { columns: curColumns, filter, sort, pageSize, page: curPage } = this.state;
+      console.groupCollapsed('updateData');
+      console.log({ curColumns, rawColumns: this.props.columns });
       const colEnum = new Enumerable(parseColumn(undefined, curColumns, this.props.columns));
+      console.log('parseColumn', parseColumn(undefined, curColumns, this.props.columns));
       const rawColumns = colEnum.toArray();
       const columns = colEnum
         .where(c => c.visible)
         .orderBy((a, b) => a.priority - b.priority)
         .toArray();
+      console.log({ RAW: rawColumns, COL: columns });
+      console.groupEnd('updateData');
       let data = rawData;
       let pages = undefined;
       let other = {};
@@ -110,27 +107,33 @@ export default (options = {}) => BaseComponent => {
     }
 
     setFilter = filter => {
-      this.setState({ filter });
+      this.setState({ filter }, this.throttledUpdate);
     };
 
     setSort = sort => {
-      this.setState({
-        sort: parseSort(sort, this.state.sort, this.props.columns),
-      });
+      this.setState(
+        {
+          sort: parseSort(sort, this.state.sort, this.props.columns),
+        },
+        this.throttledUpdate
+      );
     };
 
     setPage = page => {
-      this.setState({ page });
+      this.setState({ page }, this.throttledUpdate);
     };
 
     setPageSize = pageSize => {
-      this.setState({ pageSize });
+      this.setState({ pageSize }, this.throttledUpdate);
     };
 
     setColumn = column => {
-      this.setState({
-        columns: parseColumn(column, this.state.columns, this.props.columns),
-      });
+      console.groupCollapsed('setColumn');
+      console.log('parseColumn', { column, curColumns: this.state.columns, rawColumns: this.props.columns });
+      const columns = parseColumn(column, this.state.columns, this.props.columns);
+      console.log('=', columns);
+      this.setState({ columns }, this.throttledUpdate);
+      console.groupEnd('setColumn');
     };
 
     render() {
