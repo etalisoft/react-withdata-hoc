@@ -141,6 +141,7 @@ export default (options = {}) => BaseComponent => {
           rawData={rawData}
           rawColumns={rawColumns}
           empty={empty}
+          setColumn={this.setColumn}
           setFilter={this.setFilter}
           setSort={this.setSort}
           setPage={this.setPage}

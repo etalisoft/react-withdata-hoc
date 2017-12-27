@@ -38,6 +38,7 @@ describe('withData', () => {
       'pages',
       'rawColumns',
       'rawData',
+      'setColumn',
       'setFilter',
       'setPage',
       'setPageSize',
