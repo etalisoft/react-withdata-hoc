@@ -46,9 +46,11 @@ export default (options = {}) => BaseComponent => {
     }
 
     updateData() {
-      const { data: rawData, columns: rawColumns } = this.props;
+      const { data: rawData } = this.props;
       const { columns: curColumns, filter, sort, pageSize, page: curPage } = this.state;
-      let columns = new Enumerable(parseColumn(undefined, curColumns, rawColumns))
+      const colEnum = new Enumerable(parseColumn(undefined, curColumns, this.props.columns));
+      const rawColumns = colEnum.toArray();
+      let columns = colEnum
         .where(c => c.visible)
         .orderBy((a, b) => a.priority - b.priority)
         .toArray();
@@ -98,6 +100,7 @@ export default (options = {}) => BaseComponent => {
       }
 
       this.setState({
+        rawColumns,
         columns,
         data,
         pages,
@@ -130,16 +133,22 @@ export default (options = {}) => BaseComponent => {
     };
 
     render() {
-      const { data: rawData, columns: rawColumns, ...props } = this.props;
-      const { columnsConfig, ...state } = this.state;
+      const { data: rawData, ...props } = this.props;
+      const { columns, rawColumns, data, filter, sort, page, pageSize, pages } = this.state;
       const empty = !rawData;
 
       return (
         <BaseComponent
-          {...state}
           {...props}
           rawData={rawData}
           rawColumns={rawColumns}
+          columns={columns}
+          data={data}
+          filter={filter}
+          sort={sort}
+          page={page}
+          pageSize={pageSize}
+          pages={pages}
           empty={empty}
           setColumn={this.setColumn}
           setFilter={this.setFilter}
