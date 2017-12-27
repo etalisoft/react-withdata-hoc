@@ -12,13 +12,14 @@ export default (options = {}) => BaseComponent => {
     ...defaults.initial,
     ...options.initial,
   };
+  const parseColumn = options.parseColumn || defaults.parseColumn;
   const parseFilter = options.parseFilter || defaults.parseFilter;
   const parseSort = options.parseSort || defaults.parseSort;
   const ms = options.throttle || defaults.throttle;
 
   class WithData extends Component {
     state = {
-      columns: initial.columns,
+      columns: parseColumn(undefined, undefined, initial.columns),
       data: initial.data,
       filter: parseFilter(initial.filter),
       sort: parseSort(initial.sort, undefined, initial.columns),
@@ -46,14 +47,23 @@ export default (options = {}) => BaseComponent => {
 
     updateData() {
       const { data: rawData, columns: rawColumns } = this.props;
-      const { filter, sort, pageSize, page: curPage } = this.state;
+      const { columns: curColumns, filter, sort, pageSize, page: curPage } = this.state;
       let columns = rawColumns;
       let data = rawData;
       let pages = undefined;
       let other = {};
 
-      // TODO: filter columns
-      // TODO: sort columns
+      if (rawColumns && rawColumns.length && curColumns && curColumns.length) {
+        const colEnum = new Enumerable(columns);
+
+        // TODO: filter columns
+        colEnum.where(c => c.visible);
+
+        // TODO: sort columns
+        colEnum.orderBy((a, b) => a.priority - b.priority);
+
+        columns = colEnum.toArray();
+      }
 
       const enumerable = new Enumerable(rawData);
 
@@ -122,13 +132,14 @@ export default (options = {}) => BaseComponent => {
     };
 
     setColumn = column => {
-      // TODO: ColumnSetting :: { id:string, [priority:number], [visible:bool] }
-      // TODO: ColumnSetting or Array<ColumnSetting>
-      const { columns: rawColumns } = this.props;
-      const { columnsConfig } = this.state;
-      // TODO: filter/sort rawColumns using columnsConfig
-      const columns = columnsConfig;
-      this.setState({ columns });
+      console.log('parseColumn(');
+      console.log('column', column);
+      console.log('curColumns', this.state.columns);
+      console.log('rawColumns', this.props.columns);
+      console.log(') =', parseColumn(column, this.state.columns, this.props.columns));
+      this.setState({
+        columns: parseColumn(column, this.state.columns, this.props.columns),
+      });
     };
 
     render() {

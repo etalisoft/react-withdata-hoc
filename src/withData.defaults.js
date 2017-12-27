@@ -1,3 +1,4 @@
+import parseColumn from './parseColumn';
 import parseFilter from './parseFilter';
 import parseSort from './parseSort';
 
@@ -10,6 +11,7 @@ export default {
     page: 0,
     pageSize: 10,
   },
+  parseColumn,
   parseFilter,
   parseSort,
   throttle: 250,
